@@ -100,3 +100,47 @@ Solution
 ```
 
 Use private nodehandle for configuring the filter chain object.
+
+```yaml
+example:
+  rate: 5
+  debug: true
+  normalize: true
+  filter_chain_parameter_name: "edge/grid_map_filters"
+  grid_map_filters:
+    # Reduce noise with a radial blurring filter.
+    - name: mean_in_radius
+      type: gridMapFilters/MeanInRadiusFilter
+      params:
+        input_layer: elevation
+        output_layer: elevation_smooth
+        radius: 0.06
+
+    # Compute surface normals.
+    - name: surface_normals
+      type: gridMapFilters/NormalVectorsFilter
+      params:
+        input_layer: elevation_smooth
+        output_layers_prefix: normal_vectors_
+        radius: 0.05
+        normal_vector_positive_axis: z
+
+    # Compute slope from surface normal.
+    - name: slope
+      type: gridMapFilters/MathExpressionFilter
+      params:
+        # input_layer: elevation
+        output_layer: slope
+        expression: acos(normal_vectors_z)
+      # Edge detection by computing the standard deviation from slope.
+
+    - name: edge_detection
+      type: gridMapFilters/SlidingWindowMathExpressionFilter
+      params:
+        input_layer: slope
+        output_layer: edges
+        expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
+        compute_empty_cells: false
+        edge_handling: crop # options: inside, crop, empty, mean
+        window_length: 0.05
+```
