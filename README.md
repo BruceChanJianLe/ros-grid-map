@@ -6,12 +6,12 @@ This repository demonstrate the usage of using ETH ROS grid map.
 
 Error using `grid_map_filters`
 
-```
+```bash
 SlidingWindowIterator cannot be used with grid maps that don't have a default buffer start index.
 ```
 
 Solution:
-```
+```cpp
 std::unique_lock<std::recursive_mutex> lk(m_);
 for(grid_map::GridMapIterator itr(raw_gridmap_); !itr.isPastEnd(); ++itr)
 {
@@ -20,8 +20,13 @@ for(grid_map::GridMapIterator itr(raw_gridmap_); !itr.isPastEnd(); ++itr)
         raw_gridmap_.at(elevation_gridmap_layer_, *itr) = low_value_;
 }
 
+// solution start
+// This error happens because the default start index is not (0, 0)
+// Which we can convert by using the below method.
+// Don't set the startIndex manually as it will corrupt the grid_map
 if(!raw_gridmap_.isDefaultStartIndex())
     raw_gridmap_.convertToDefaultStartIndex();
+// solution end
 
 try
 {
