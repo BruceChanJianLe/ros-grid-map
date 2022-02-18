@@ -39,7 +39,7 @@ try
             ros::this_node::getName()
             << " "
             << __func__
-            << " gap filter failed to update."
+            << " example filter failed to update."
         );
         update_ = false;
         return;
@@ -66,7 +66,10 @@ Error using `grid_map_filter`
 
 Did not get the params set for filters.
 
+Solution
 ```cpp
+    filters::FilterChain<grid_map::GridMap> filters_("grid_map::GridMap");
+
     void exampleFilter::onInit()
     {
         global_nh_ = this->getMTNodeHandle();
@@ -79,7 +82,7 @@ Did not get the params set for filters.
         {
             ROS_ERROR_STREAM(
                 ros::this_node::getName()
-                << " Failed to start gap filter."
+                << " Failed to start example filter."
             );
             return;
         }
@@ -92,6 +95,8 @@ Did not get the params set for filters.
 
     void exampleFilter::loadROSParams()
     {
-        private_nh_.param<std::string>("gap/filter_chain_parameter_name", filter_chain_parameter_name_, "gap/grid_map_filters");
+        private_nh_.param<std::string>("example/filter_chain_parameter_name", filter_chain_parameter_name_, "example/grid_map_filters");
     }
 ```
+
+Use private nodehandle for configuring the filter chain object.
