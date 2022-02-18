@@ -4,6 +4,8 @@ This repository demonstrate the usage of using ETH ROS grid map.
 
 ## Error
 
+### 1.
+
 Error using `grid_map_filters`
 
 ```bash
@@ -57,3 +59,39 @@ first_time_ = update_ = false;
 ```
 
 [reference](https://github.com/ANYbotics/elevation_mapping/issues/190)
+
+### 2.
+
+Error using `grid_map_filter`
+
+Did not get the params set for filters.
+
+```cpp
+    void exampleFilter::onInit()
+    {
+        global_nh_ = this->getMTNodeHandle();
+        private_nh_ = this->getPrivateNodeHandle();
+
+        loadROSParams();
+
+        // if(!filters_.configure(filter_chain_parameter_name_, ""))
+        if(!filters_.configure(filter_chain_parameter_name_, private_nh_))
+        {
+            ROS_ERROR_STREAM(
+                ros::this_node::getName()
+                << " Failed to start gap filter."
+            );
+            return;
+        }
+
+        ROS_INFO_STREAM(
+            ros::this_node::getName()
+            << " Started example filter."
+        );
+    }
+
+    void exampleFilter::loadROSParams()
+    {
+        private_nh_.param<std::string>("gap/filter_chain_parameter_name", filter_chain_parameter_name_, "gap/grid_map_filters");
+    }
+```
